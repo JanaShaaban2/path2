@@ -1,3 +1,4 @@
+
 "use strict";
 const users = [
     {
@@ -90,44 +91,52 @@ const users = [
           searchContainer.style.display = (searchContainer.style.display === 'none' || searchContainer.style.display === '') ? 'block' : 'none';
       }
       //זאת פונקציה להוספת איש קשר לתוך הרשימה:
-      function addNewUser()
-      {
+      function addNewUser() {
         showPopup();
     
         document.getElementById("popup").innerHTML = `
-         <h2>Add new user</h2>
-        <form id="userForm">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name"><br><br>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email"><br><br>
-            <label for="country">Country:</label>
-            <input type="text" id="country" name="country"><br><br>
-            <label for="phone">Phone:</label>
-            <input type="tel" id="phone" name="phone"><br><br>
-            <label for="img">Image:</label>
-            <input type="file" id="img" name="img"><br><br>
-            <button type="submit"><img src="./icons/add1.png"/></button>
-             <button onclick="closeModal(event)"><img src="./icons/close.png"/></button>
-        </form>
+            <h2>Add new user</h2>
+            <form id="userForm">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name"><br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email"><br><br>
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country"><br><br>
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone"><br><br>
+                <label for="img">Image:</label>
+                <input type="file" id="img" name="img"><br><br>
+                <button type="submit"><img src="./icons/add1.png" alt="Add"/></button>
+                <button type="button" onclick="closeModal(event)"><img src="./icons/close.png" alt="Close"/></button>
+            </form>
         `;
+    
         const form = document.getElementById("userForm");
         form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const formData = new FormData(form);
-          const newUser = {
-            name: formData.get("name"),
-            email: formData.get("email"),
-            country: formData.get("country"),
-            phone: formData.get("phone"),
-            img: formData.get("img").name
-          };
-          users.push(newUser);
-          showUsers();
-          document.getElementById("popup").classList.toggle("show");
+            e.preventDefault();
+            const formData = new FormData(form);
+    
+            // Create a new user object
+            const newUser = {
+                name: formData.get("name"),
+                email: formData.get("email"),
+                country: formData.get("country"),
+                phone: formData.get("phone"),
+                img: formData.get("img") ? formData.get("img").name : 'default.jpg' // Handle the case where no image is selected
+            };
+    
+            // Add new user to the list
+            users.push(newUser);
+    
+            // Refresh the user list
+            showUsers();
+    
+            // Close the modal
+            document.getElementById("popup").style.display = "none";
         });
-      
-      }
+    }
+    
       
       function deleteUser(phoneNumber) {
         const index = users.findIndex((user) => user.phone === phoneNumber);
@@ -173,65 +182,74 @@ const users = [
           }
 
 
-          function editUser(phoneNumber) {
-            const user = users.find((user) => user.phone === phoneNumber);
-            showPopup();
+         
+            function editUser(phoneNumber) {
+              const user = users.find((user) => user.phone === phoneNumber);
+              showPopup();
           
-            const popup = document.getElementById("popup");
+              const popup = document.getElementById("popup");
           
-            popup.innerHTML = `
-              <h2>Edit ${user.name}</h2>
-              <form id="userForm">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" value="${user.name}"><br><br>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="${user.email}"><br><br>
-                <label for="country">Country:</label>
-                <input type="text" id="country" name="country" value="${user.country}"><br><br>
-                <label for="phone">Phone:</label>
-                <input type="tel" id="phone" name="phone" value="${user.phone}"><br><br>
-                <label for="img">Image:</label>
-                <input type="file" id="img" name="img" value="${user.img}"><br><br>
-              </form>
-              <div>
-              <button onclick="saveEditedUser('${user.phone}')"><img src="./icons/save.png"/></button>
-              <button onclick="closeModal(event)"><img src="./icons/close.png"/></button>
-              </div>
-            `;
+              popup.innerHTML = `
+                  <h2>Edit ${user.name}</h2>
+                  <form id="userForm">
+                      <label for="name">Name:</label>
+                      <input type="text" id="name" name="name" value="${user.name}"><br><br>
+                      <label for="email">Email:</label>
+                      <input type="email" id="email" name="email" value="${user.email}"><br><br>
+                      <label for="country">Country:</label>
+                      <input type="text" id="country" name="country" value="${user.country}"><br><br>
+                      <label for="phone">Phone:</label>
+                      <input type="tel" id="phone" name="phone" value="${user.phone}" readonly><br><br>
+                      <label for="img">Image:</label>
+                      <input type="file" id="img" name="img"><br><br>
+                  </form>
+                  <div>
+                      <button onclick="saveEditedUser('${user.phone}')"><img src="./icons/save.png" alt="Save" /></button>
+                      <button onclick="closeModal(event)"><img src="./icons/close.png" alt="Close" /></button>
+                  </div>
+              `;
           }
+          
           function saveEditedUser(phoneNumber) {
             const user = users.find((user) => user.phone === phoneNumber);
             const form = document.getElementById("userForm");
-            user.name = form.name.value;
-            user.email = form.email.value;
-            user.country = form.country.value;
-            user.phone = form.phone.value;
-          
-            // Check if the img input field has changed
-            const imgInput = form.img;
+            const formData = new FormData(form);
+        
+            // Update user details
+            user.name = formData.get('name');
+            user.email = formData.get('email');
+            user.country = formData.get('country');
+        
+            // Check if a new image is selected
+            const imgInput = document.getElementById("img");
             if (imgInput.files.length > 0) {
-              // If a new image is selected, update the user.img property
-              user.img = imgInput.files[0].name;
+                const file = imgInput.files[0];
+                user.img = file.name; // Update user image with the new file name
             }
-          
+        
+            // Refresh user list display
             showUsers();
-            document.getElementById("popup").classList.toggle("show");
-          }
+            document.getElementById("popup").style.display = "none";
+        }
+        
+          
           
       
+        
           function searchUsers() {
             const searchInput = document.getElementById('searchInput').value.toLowerCase();
             const filteredUsers = users.filter(user => {
               return (
-                user.name.toLowerCase().includes(searchInput) ||
-                user.email.toLowerCase().includes(searchInput) ||
-                user.country.toLowerCase().includes(searchInput) ||
-                user.phone.toString().includes(searchInput)
+                user.name.toLowerCase().startsWith(searchInput) || // מוצא שמות שמתחילים עם מה שהוזן
+                user.email.toLowerCase().startsWith(searchInput) ||
+                user.country.toLowerCase().startsWith(searchInput) ||
+                user.phone.startsWith(searchInput) // מספר טלפון בדרך כלל נשאר כפי שהוא
               );
             });
-            showUsers(filteredUsers);
+            showUsers(filteredUsers); // הצגת תוצאות החיפוש
           }
-          document.getElementById('searchBtn').addEventListener('click', searchUsers);
+          document.getElementById('searchInput').addEventListener('input', searchUsers);
+          
 
 
           function showUsers(usersToShow = users) {
@@ -259,6 +277,8 @@ const users = [
             } );
             document.getElementById( 'resultContainer' ).innerHTML = result;
           }
+            
+            
           
 
     function closeModal ( event ) {
@@ -267,3 +287,4 @@ const users = [
       }
        document.getElementById('popup').style.display = "none";
     }
+       
